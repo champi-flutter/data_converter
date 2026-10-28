@@ -6,3 +6,6 @@ export 'package:data_converter/src/uint_8_list/int_32_blob_codec.dart';
 // date
 export 'package:data_converter/src/date/to_int_id.dart';
 
+// int_32_packer
+export 'package:data_converter/src/int/int_32_packer.dart';
+
