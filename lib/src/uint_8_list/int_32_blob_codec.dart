@@ -14,20 +14,13 @@ class Int32Blob {
   // todo コンストラクタ
   Int32Blob.fromIntList(List<int> intList): _source = intList.toInt32List();
 
-  Int32Blob._fromValidatedUint8List(Uint8List uint8List) : _source = Int32List.sublistView(uint8List);
-
   /// 外部の [Uint8List] の生データを [Int32Blob] に当てはめるファクトリコンストラクタ
   ///
   /// インスタンス化前に、適切なデータであるかどうかのバリデーションを挟む。
-  factory Int32Blob.fromUint8List(Uint8List uint8List) {
-    // インスタンス化の前にバリデーション（バイト長を検証）する
-    _validateUint8List(uint8List);
-    // バリデーションを終えてからインスタンス化する
-    return Int32Blob._fromValidatedUint8List(uint8List);
-  }
+  Int32Blob.fromUint8List(Uint8List uint8List)  : _source = _applyUint8List(uint8List);
 
   @protected
-  static void _validateUint8List(Uint8List uint8List){
+  static Int32List _applyUint8List(Uint8List uint8List){
     // インスタンス化の前にバリデーション（バイト長を検証）する
     if (uint8List.offsetInBytes % 4 != 0 ||
         uint8List.lengthInBytes % 4 != 0) {
@@ -35,6 +28,7 @@ class Int32Blob {
         "[Int32Blob.fromUint8List] 連続した 32bit 整数データになっていません。",
       );
     }
+    return Int32List.fromList(Int32List.sublistView(uint8List));
   }
 
   // todo 参照
