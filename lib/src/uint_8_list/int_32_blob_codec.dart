@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
+
 /// メモリ領域にある、連続した 32bit の整数（n 個の 4 bite）を
 /// [Uint8List] （(4*n) 個の 1 bite）として参照するためのクラス。
 class Int32Blob {
@@ -8,21 +10,25 @@ class Int32Blob {
 
   /// 本体のメモリ領域（n 個の 32 bit （ 4 bite ）整数）の、 [Uint8List]
   /// （(4*n) 個の 1 bite データ）としての参照
-  Uint8List getAsUint8List() => Uint8List.fromList(
-    Uint8List.sublistView(_source),
-  );
+  Uint8List getAsUint8List() =>
+      Uint8List.fromList(Uint8List.sublistView(_source));
 
-  Int32Blob.fromIntList(List<int> intList): _source = intList.toInt32List();
+  Int32Blob.fromIntList(List<int> intList) : _source = intList.toInt32List();
 
-  Int32Blob._fromValidatedUint8List(Uint8List uint8List) : _source = Int32List.sublistView(uint8List);
+  @protected
+  Int32Blob._fromValidatedUint8List(Uint8List uint8List)
+    : _source = Int32List.sublistView(uint8List);
 
   /// 外部の [Uint8List] の生データを [Int32Blob] に当てはめるファクトリコンストラクタ
   ///
   /// インスタンス化前に、適切なデータであるかどうかのバリデーションを挟む。
-  factory Int32Blob.fromUint8List(Uint8List uint8List) {
+  factory Int32Blob.fromUint8List(Uint8List uint8List) =>
+      validateUint8List(uint8List);
+
+  @protected
+  static Int32Blob validateUint8List(Uint8List uint8List) {
     // インスタンス化の前にバリデーション（バイト長を検証）する
-    if (uint8List.offsetInBytes % 4 != 0 ||
-        uint8List.lengthInBytes % 4 != 0) {
+    if (uint8List.offsetInBytes % 4 != 0 || uint8List.lengthInBytes % 4 != 0) {
       throw FormatException(
         "[Int32Blob.fromUint8List] 連続した 32bit 整数データになっていません。",
       );
@@ -76,7 +82,6 @@ class Int32Blob {
 // }
 
 extension EncodeToInt32Blob on List<int> {
-
   /// [Int32List] に変換する
   Int32List toInt32List() {
     for (final value in this) {
